@@ -1,0 +1,48 @@
+cloudtop - 13:21:09 - 8 active hosts, 1 down hosts, 22 vm                                                   |
+VM       : Total:   22, Run:   10, Idle:    12                                                              |
+CPU(Core): Total:   32, Hi :    8, Med :     5, Low:   10, Idle:    9                                       |
+MEM(GB)  : Total:   48, Provisioned    :    56, Use:   34, Free:   14                                       |
+Hosts                          Guests VM                                                                    |
+NAME         VM LOAD CPU RAM   ID   NAME            HOSTS      #CPU  CPU(%)    TIME+  MEM MEM%  DISK   NET  |
+[all]                          110  www.hpcnc.com   vm1.nebula    2    10.8  HHHH:MM  2.0 78.0   8.0  123k  |
+[nebula]                       111  www.hpcnc.com   vm2.nebula    2    10.8  HHHH:MM  2.0 78.0   8.0  123k  | 
+vm1.nebula    2  1.2   4  16   112  www.hpcnc.com   vm3.nebula    2    10.8  HHHH:MM  2.0 78.0   8.0  123k  |
+vm2.nebula    2  5.3   4  16   114  www.hpcnc.com   vm4.nebula    2    10.8  HHHH:MM  2.0 78.0   8.0  123k  |
+vm3.nebula    2  4.2   4  16   116  www.hpcnc.com   vm1.nebula    2    10.8  HHHH:MM  2.0 78.0   8.0  123k  |
+vm4.nebula    2  1.2   4  16   113  www.hpcnc.com   vm2.nebula    2    10.8  HHHH:MM  2.0 78.0   8.0  123k  |
+                               113  www.hpcnc.com   vm3.nebula    2    10.8  HHHH:MM  2.0 78.0   8.0  123k  |
+                               213  www.hpcnc.com   vm4.nebula    2    10.8  HHHH:MM  2.0 78.0   8.0  123k  |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+                                                                                                            |
+
+
+
+
+
+
+
