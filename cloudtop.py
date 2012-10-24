@@ -43,11 +43,11 @@ class GatherProcess(Process):
     return domsinfo
 
   def get_host_info(self):
-    hostinfo = dict()
-    hostinfo['hostname'] = self.conn.getHostname()
-    hostinfo['model'],hostinfo['memory'],hostinfo['cpus'],hostinfo['mhz'],hostinfo['nodes'],hostinfo['sockets'],hostinfo['cores'],hostinfo['threads'] = self.conn.getInfo()
-    hostinfo['doms'] = self.doms_info()
-    return hostinfo
+    r = dict()
+    r['hostname'] = self.conn.getHostname()
+    r['model'],r['memory'],r['cpus'],r['mhz'],r['nodes'],r['sockets'],r['cores'],r['threads'] = self.conn.getInfo()
+    r['doms'] = self.doms_info()
+    return r
 
   def run(self):
     while True:
