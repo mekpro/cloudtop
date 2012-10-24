@@ -22,17 +22,19 @@ class GatherProcess(Process):
     self.conn = libvirt.openReadOnly(uri)
 
   def queryDomInfo(self, dom):
-    dominfo = dict()
-    dominfo['state'],dominfo['maxmem'],dominfo['memory'],dominfo['ncpus'],dominfo['cputime'] =  dom.info()
+    r = dict()
+    r['state'],r['maxmem'],r['memory'],r['ncpus'],r['cputime'] =  dom.info()
+    r['name'] = dom.getName()
+    r['uuid'] = dom.getUUID()
     net_target = "venet0"
     disk_target = "vda"
 #    interfaceStats = dom.interfaceStats(net_target)
-#    dominfo['net_rx_bytes'] = interfaceStats[0]
-#    dominfo['net_tx_bytes'] = interfaceStats[4]
+#    r['net_rx_bytes'] = interfaceStats[0]
+#    r['net_tx_bytes'] = interfaceStats[4]
 #    diskStats =  dom.blockStats("disk_target")
-#    dominfo['disk_rd_bytes'] = diskStats[1]
-#    dominfo['disk_wr_bytes'] = diskStats[3]
-    return dominfo
+#    r['disk_rd_bytes'] = diskStats[1]
+#    r['disk_wr_bytes'] = diskStats[3]
+    return r
 
   def doms_info(self):
     doms = list()
