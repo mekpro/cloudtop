@@ -7,7 +7,10 @@ import time
 import sys
 
 uri_list = [
-  "qemu+ssh://root@158.108.34.67/system",
+  "qemu+ssh://root@158.108.38.93/system",
+  "qemu+ssh://root@158.108.34.5/system",
+  "qemu+ssh://root@158.108.34.6/system",
+  "qemu+ssh://root@158.108.34.7/system",
   "",]
 INTERVAL = 1.0
 VIRT_CONNECT_TIMEOUT = 5
