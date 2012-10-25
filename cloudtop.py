@@ -28,8 +28,8 @@ class GatherProcess(Process):
   def queryDomInfo(self, dom):
     r = dict()
     r['state'],r['maxmem'],r['memory'],r['ncpus'],r['cputime'] =  dom.info()
-    r['name'] = dom.getName()
-    r['uuid'] = dom.getUUID()
+    r['name'] = dom.name()
+    r['uuid'] = dom.UUID()
     net_target = "venet0"
     disk_target = "vda"
 #    interfaceStats = dom.interfaceStats(net_target)
