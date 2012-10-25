@@ -7,19 +7,23 @@ import time
 import sys
 
 uri_list = [
-  "qemu+ssh://root@158.108.38.93/system",
-  "qemu+ssh://root@158.108.34.5/system",
-  "qemu+ssh://root@158.108.34.6/system",
-  "qemu+ssh://root@158.108.34.7/system",
-  "",]
+  ('peacewalker','qemu+ssh://root@158.108.38.93/system'),
+  ('vm1.rain','qemu+ssh://root@158.108.34.5/system'),
+  ('vm2.rain','qemu+ssh://root@158.108.34.6/system'),
+  ('vm3.rain','qemu+ssh://root@158.108.34.7/system'),
+  ]
 INTERVAL = 1.0
 VIRT_CONNECT_TIMEOUT = 5
 
 class GatherProcess(Process):
-  def __init__(self, uri, queue):
+  def __init__(self, node_name, node_uri, queue):
     Process.__init__(self)
+    self.node_name = node_name
     self.queue = queue
-    self.conn = libvirt.openReadOnly(uri)
+    self.old_stats = None
+    self.new_stats = None
+    self.conn = libvirt.openReadOnly(node_uri)
+
 
   def queryDomInfo(self, dom):
     r = dict()
@@ -47,24 +51,39 @@ class GatherProcess(Process):
       domsinfo.append(self.queryDomInfo(dom))
     return domsinfo
 
-  def get_host_info(self):
+  def get_node_stats(self):
     r = dict()
     r['hostname'] = self.conn.getHostname()
     r['model'],r['memory'],r['cpus'],r['mhz'],r['nodes'],r['sockets'],r['cores'],r['threads'] = self.conn.getInfo()
     r['doms'] = self.doms_info()
     return r
 
+  def compute_stats(new_stats, old_stats):
+    stats = new_stats
+    # TODO: compute meaningful stat from different timeframe
+    # eg. rate of cpu usage from differential over the time
+    return stats
+
+  def rrdstore(stats):
+    # TODO: store value in rrd file
+    return stats
+
   def run(self):
     while True:
-      hostinfo = self.get_host_info()
-      self.queue.put(hostinfo)
+      new_stats = self.get_node_stats()
+      if self.old_stats is None:
+        logging.info("starting collection from %s", self.node_uri)
+      else:
+        stats = compute_stats(self.new_stats, self.old_stats)
+        rrdstore(stats)
+      self.queue.put(stats)
       time.sleep(INTERVAL)
 
 if __name__ == '__main__':
   queue = Queue()
   process_list = list()
   for uri in uri_list:
-    p = GatherProcess(uri, queue)
+    p = GatherProcess(uri[0], uri[1], queue)
     p.start()
     process_list.append(p)
 
