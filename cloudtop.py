@@ -47,7 +47,7 @@ class GatherProcess(Process):
     domids = self.conn.listDomainsID()
     for domid in domids:
       dom = self.conn.lookupByID(domid)
-      domsinfo.append(self.get_dom_stats(dom))
+      doms_stats.append(self.get_dom_stats(dom))
     return doms_stats
 
   def get_node_stats(self):
@@ -55,7 +55,7 @@ class GatherProcess(Process):
     r['hostname'] = self.conn.getHostname()
     r['model'],r['memory'],r['cpus'],r['mhz'],r['nodes'],r['sockets'],r['cores'],r['threads'] = self.conn.getInfo()
     r['doms'] = self.get_doms()
-    r['doms_count'] = self.conn.listDomainID()
+    r['doms_count'] = len(self.conn.listDomainsID())
     cpu_stats = self.conn.getCPUStats(-1,0)
     r['cpu_kernel'] = cpu_stats['kernel']
     r['cpu_idle'] = cpu_stats['idle']
