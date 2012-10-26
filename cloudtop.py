@@ -1,6 +1,7 @@
 from multiprocessing.queues import Queue 
 from multiprocessing import Process
 from multiprocessing import Pool
+from lib import xmltodict
 
 import logging
 import libvirt
@@ -27,13 +28,29 @@ class GatherProcess(Process):
     logging.info("Connecting to %s", self.node_uri)
     self.conn = libvirt.openReadOnly(self.node_uri)
 
+  def parse_dom_disks(xmldesc):
+    result = list()
+    xmld = xmltodict.parse(xmldesc)
+    for i in xmld['domain']['devices']['disk']:
+      result.append(i['target']['@dev'])
+    return result
+#   return ['vda','vdb']
+
+  def parse_dom_nets(xmldesc):
+    result = list()
+    #xmld = xmltodict.parse(xmldesc)
+    #xmld['domain']['devices']['interface']['target']['@dev']
+    return ['venet0']
+
   def get_dom_stats(self, dom):
     r = dict()
     r['state'],r['maxmem'],r['memory'],r['ncpus'],r['cputime'] =  dom.info()
     r['name'] = dom.name()
     r['uuid'] = dom.UUID()
-    net_target = "venet0"
-    disk_target = "vda"
+    r['xmldesc'] = dom.XMLDesc(0)
+    r['nets'] = self.parse_dom_nets(xmldesc)
+    r['disks'] = self.parse_dom_disks(xmldesc)
+    #TODO here!!
 #    interfaceStats = dom.interfaceStats(net_target)
 #    r['net_rx_bytes'] = interfaceStats[0]
 #    r['net_tx_bytes'] = interfaceStats[4]
