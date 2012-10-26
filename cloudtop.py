@@ -55,12 +55,20 @@ class GatherProcess(Process):
     r['hostname'] = self.conn.getHostname()
     r['model'],r['memory'],r['cpus'],r['mhz'],r['nodes'],r['sockets'],r['cores'],r['threads'] = self.conn.getInfo()
     r['doms'] = self.get_doms()
-    r['doms_count'] = self.conn.listDomainID()
-    cpu_stats = self.conn.getCPUStats(-1,0)
-    r['cpu_kernel'] = cpu_stats['kernel']
-    r['cpu_idle'] = cpu_stats['idle']
-    r['cpu_user'] = cpu_stats['user']
-    r['cpu_iowait'] = cpu_stats['iowait']
+    r['doms_count'] =len(self.conn.listDomainID())
+    r['disks'] = self.conn.listStoragePools()
+    r['stats'] = dict()
+    r['stats']['cpu'] = self.conn.getCPUStats(-1,0)
+    #{'kernel': 2531940000000L, 'idle': 1375626920000000L, 'user': 3270180000000L, 'iowait': 8155620000000L}
+    r['stats']['mem'] = self.conn.getMemoryStats(-1,0)
+    #{'cached': 1906532L, 'total': 16351276L, 'buffers': 454240L, 'free': 11705280L }
+    r['stats']['disks'] = dict()
+    for disk_name in disks:
+      v = dict()
+      pool = self.conn.storagePoolLookupByName(disk_name)
+      v['state'],v['capacity'],v['allocation'],v['available'] = pool.info()
+      r['stats']['disks'][disk_name] = v
+    #for net_name in nets:
     return r
 
   def compute_stats(self, new_stats, old_stats):
