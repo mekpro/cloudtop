@@ -47,7 +47,7 @@ class GatherProcess(Process):
     domids = self.conn.listDomainsID()
     for domid in domids:
       dom = self.conn.lookupByID(domid)
-      domsinfo.append(self.get_dom_stats(dom))
+      doms_stats.append(self.get_dom_stats(dom))
     return doms_stats
 
   def get_node_stats(self):
