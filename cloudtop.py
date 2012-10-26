@@ -24,11 +24,10 @@ class GatherProcess(Process):
     self.old_stats = None
     self.new_stats = None
     self.node_uri = node_uri
-    logging.info("connecting to %s", self.node_uri)
-    self.conn = libvirt.openReadOnly(node_uri)
+    logging.info("Connecting to %s", self.node_uri)
+    self.conn = libvirt.openReadOnly(self.node_uri)
 
-
-  def queryDomInfo(self, dom):
+  def get_dom_stats(self, dom):
     r = dict()
     r['state'],r['maxmem'],r['memory'],r['ncpus'],r['cputime'] =  dom.info()
     r['name'] = dom.name()
@@ -43,22 +42,25 @@ class GatherProcess(Process):
 #    r['disk_wr_bytes'] = diskStats[3]
     return r
 
-  def doms_info(self):
-    doms = list()
-    domsinfo = list()
+  def get_doms(self):
+    doms_stats = list()
     domids = self.conn.listDomainsID()
     for domid in domids:
       dom = self.conn.lookupByID(domid)
-      doms.append(dom)
-    for dom in doms:
-      domsinfo.append(self.queryDomInfo(dom))
-    return domsinfo
+      domsinfo.append(self.get_dom_stats(dom))
+    return doms_stats
 
   def get_node_stats(self):
     r = dict()
     r['hostname'] = self.conn.getHostname()
     r['model'],r['memory'],r['cpus'],r['mhz'],r['nodes'],r['sockets'],r['cores'],r['threads'] = self.conn.getInfo()
-    r['doms'] = self.doms_info()
+    r['doms'] = self.get_doms()
+    r['doms_count'] = self.conn.listDomainID()
+    cpu_stats = self.conn.getCPUStats(-1,0)
+    r['cpu_kernel'] = cpu_stats['kernel']
+    r['cpu_idle'] = cpu_stats['idle']
+    r['cpu_user'] = cpu_stats['user']
+    r['cpu_iowait'] = cpu_stats['iowait']
     return r
 
   def compute_stats(self, new_stats, old_stats):
