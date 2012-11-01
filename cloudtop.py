@@ -3,6 +3,7 @@ from multiprocessing import Process
 from multiprocessing import Pool
 from lib import xmltodict
 
+import copy
 import logging
 import libvirt
 import time
@@ -14,7 +15,7 @@ uri_list = (
 #  ('vm2.rain','qemu+ssh://root@158.108.34.6/system'),
 #  ('vm3.rain','qemu+ssh://root@158.108.34.7/system'),
   )
-INTERVAL = 1.0
+INTERVAL = 60.0
 VIRT_CONNECT_TIMEOUT = 5
 
 class GatherProcess(Process):
@@ -25,9 +26,10 @@ class GatherProcess(Process):
     self.old_stats = None
     self.new_stats = None
     self.node_uri = node_uri
+    self.interval = INTERVAL
     logging.info("Connecting to %s", self.node_uri)
     self.conn = libvirt.openReadOnly(self.node_uri)
-
+ 
   def parse_dom_disks(self, xmldesc):
     result = list()
     xmld = xmltodict.parse(xmldesc)
@@ -81,7 +83,7 @@ class GatherProcess(Process):
     r['doms_count'] = len(self.conn.listDomainsID())
     r['disks'] = self.conn.listStoragePools()
     r['stats'] = dict()
-    r['stats']['cpu'] = self.conn.getCPUStats(-1,0)
+    r['stats']['cputime'] = self.conn.getCPUStats(-1,0)
     #{'kernel': 2531940000000L, 'idle': 1375626920000000L, 'user': 3270180000000L, 'iowait': 8155620000000L}
     r['stats']['mem'] = self.conn.getMemoryStats(-1,0)
     #{'cached': 1906532L, 'total': 16351276L, 'buffers': 454240L, 'free': 11705280L }
@@ -93,15 +95,24 @@ class GatherProcess(Process):
       r['stats']['disks'][disk_name] = v
     return r
 
-  def compute_stats(self, new_stats, old_stats):
-    stats = new_stats
+  def diff_stats(self, new_stats, old_stats, interval):
+    sums = 0
+    stats = copy.deepcopy(new_stats)
+    for k in ['kernel','idle','user','iowait']:
+      v = new_stats['stats']['cputime'][k] - old_stats['stats']['cputime'][k]
+      stats['stats']['cputime'][k] = v
+      sums = sums + v
+    for k in ['kernel','idle','user','iowait']:
+      stats['stats']['cputime'][k] = (stats['stats']['cputime'][k]*100.0)/sums
+    logging.info(stats['stats']['cputime'])
+
     # TODO: compute meaningful stat from different timeframe
     # eg. rate of cpu usage from differential over the time
     return stats
 
   def rrdstore(self, stats):
+    # logging.info("rrdstore :"+ str(stats['stats']))
     # TODO: store value in rrd file
-    logging.info("rrdstore :"+ str(stats))
     return stats
 
   def run(self):
@@ -110,11 +121,11 @@ class GatherProcess(Process):
       if self.old_stats is None:
         logging.info("starting collection from %s", self.node_uri)
       else:
-        stats = self.compute_stats(self.new_stats, self.old_stats)
+        stats = self.diff_stats(self.new_stats, self.old_stats, self.interval)
         self.rrdstore(stats)
         self.queue.put(stats)
       self.old_stats = self.new_stats
-      time.sleep(INTERVAL)
+      time.sleep(self.interval)
 
 if __name__ == '__main__':
   logger = logging.getLogger('')
@@ -130,5 +141,5 @@ if __name__ == '__main__':
   print "Starting value gathering:"
   #Listen Value
   while True:
-    print queue.get()
+    queue.get()
 

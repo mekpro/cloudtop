@@ -1,0 +1,129 @@
+// Processed data turn neccessary raw value into rate by differential with specified time interval
+{
+    "cores": 4, 
+    "cpus": 8, 
+    "doms_count": 3, 
+    "hostname": "vm1.cloud.cpe.ku.ac.th", 
+    "memory": 32056, 
+    "mhz": 1200, 
+    "model": "x86_64", 
+    "nodes": 2, 
+    "sockets": 1, 
+    "stats": {
+        "cputime": {
+            "idle": 91.90, 
+            "iowait": 4.20, 
+            "kernel": 1.10, 
+            "user": 2.80 
+        }, 
+        "disks": {
+            "d4ca85b7-874b-4340-a154-68152cd4a717": {
+                "allocation": 7614939136, 
+                "available": 45229748224, 
+                "capacity": 52844687360, 
+                "state": 2
+            }, 
+            "e8e35dcb-0214-446b-a34c-326c6bd932d3": {
+                "allocation": 11585900544, 
+                "available": 4386460610560, 
+                "capacity": 4398046511104, 
+                "state": 2
+            }
+        }, 
+        "mem": {
+            "buffers": 199692, 
+            "cached": 183308, 
+            "free": 30563328, 
+            "total": 32826260
+        }
+    }, 
+    "threads": 1
+    "disks": [
+        "d4ca85b7-874b-4340-a154-68152cd4a717", 
+        "e8e35dcb-0214-446b-a34c-326c6bd932d3"
+    ], 
+    "doms": [
+        {
+            "cputime": 42.02, 
+            "disks": [
+                "vda", 
+                "vdb", 
+                "hdc"
+            ], 
+            "disks_stats": {
+                "hdc": {
+                    "rd_bytes": 676480, 
+                    "wr_bytes": 0
+                }, 
+                "vda": {
+                    "rd_bytes": 81504256, 
+                    "wr_bytes": 72589312
+                }, 
+                "vdb": {
+                    "rd_bytes": 508928, 
+                    "wr_bytes": 12288
+                }
+            }, 
+            "maxmem": 131072, 
+            "memory": 131072, 
+            "name": "r-15-VM", 
+            "ncpus": 1, 
+            "nets": [], 
+            "nets_stats": {}, 
+            "state": 1
+        }, 
+        {
+            "cputime": 10.20, 
+            "disks": [
+                "vda", 
+                "vdb", 
+                "hdc"
+            ], 
+            "disks_stats": {
+                "hdc": {
+                    "rd_bytes": 28136064, 
+                    "wr_bytes": 0
+                }, 
+                "vda": {
+                    "rd_bytes": 126900224, 
+                    "wr_bytes": 904716288
+                }, 
+                "vdb": {
+                    "rd_bytes": 578560, 
+                    "wr_bytes": 12288
+                }
+            }, 
+            "maxmem": 262144, 
+            "memory": 262144, 
+            "name": "s-5-VM", 
+            "ncpus": 1, 
+            "nets": [], 
+            "nets_stats": {}, 
+            "state": 1
+        }, 
+        {
+            "cputime": 4.28, 
+            "disks": [
+                "vda", 
+                "hdc"
+            ], 
+            "disks_stats": {
+                "hdc": {
+                    "rd_bytes": 44, 
+                    "wr_bytes": 0
+                }, 
+                "vda": {
+                    "rd_bytes": 153309184, 
+                    "wr_bytes": 313963520
+                }
+            }, 
+            "maxmem": 2097152, 
+            "memory": 2097152, 
+            "name": "i-3-16-VM", 
+            "ncpus": 2, 
+            "nets": [], 
+            "nets_stats": {}, 
+            "state": 1
+        }
+    ], 
+}
