@@ -9,10 +9,10 @@ import time
 import sys
 
 uri_list = (
-  ('peacewalker','qemu+ssh://root@158.108.38.93/system'),
+#  ('peacewalker','qemu+ssh://root@158.108.38.93/system'),
   ('vm1.rain','qemu+ssh://root@158.108.34.5/system'),
-  ('vm2.rain','qemu+ssh://root@158.108.34.6/system'),
-  ('vm3.rain','qemu+ssh://root@158.108.34.7/system'),
+#  ('vm2.rain','qemu+ssh://root@158.108.34.6/system'),
+#  ('vm3.rain','qemu+ssh://root@158.108.34.7/system'),
   )
 INTERVAL = 1.0
 VIRT_CONNECT_TIMEOUT = 5
@@ -28,7 +28,7 @@ class GatherProcess(Process):
     logging.info("Connecting to %s", self.node_uri)
     self.conn = libvirt.openReadOnly(self.node_uri)
 
-  def parse_dom_disks(xmldesc):
+  def parse_dom_disks(self, xmldesc):
     result = list()
     xmld = xmltodict.parse(xmldesc)
     for i in xmld['domain']['devices']['disk']:
@@ -36,27 +36,33 @@ class GatherProcess(Process):
     return result
 #   return ['vda','vdb']
 
-  def parse_dom_nets(xmldesc):
+  def parse_dom_nets(self, xmldesc):
     result = list()
     #xmld = xmltodict.parse(xmldesc)
     #xmld['domain']['devices']['interface']['target']['@dev']
-    return ['venet0']
+    #return ['venet0']
+    return []
 
   def get_dom_stats(self, dom):
     r = dict()
     r['state'],r['maxmem'],r['memory'],r['ncpus'],r['cputime'] =  dom.info()
     r['name'] = dom.name()
     r['uuid'] = dom.UUID()
-    r['xmldesc'] = dom.XMLDesc(0)
+    xmldesc = dom.XMLDesc(0)
     r['nets'] = self.parse_dom_nets(xmldesc)
+    r['nets_stats'] = dict()
     r['disks'] = self.parse_dom_disks(xmldesc)
-    #TODO here!!
-#    interfaceStats = dom.interfaceStats(net_target)
-#    r['net_rx_bytes'] = interfaceStats[0]
-#    r['net_tx_bytes'] = interfaceStats[4]
-#    diskStats =  dom.blockStats("disk_target")
-#    r['disk_rd_bytes'] = diskStats[1]
-#    r['disk_wr_bytes'] = diskStats[3]
+    r['disks_stats'] = dict()
+    for inet in r['nets']:
+      inetstats = dom.interfaceStats(inet)
+      r['nets_stats'][inet] = dict()
+      r['nets_stats'][inet]['rx_bytes'] = inetstats[0]
+      r['nets_stats'][inet]['tx_bytes'] = inetstats[4]
+    for disk in r['disks']:
+      diskstats = dom.blockStats(disk) 
+      r['disks_stats'][disk] = dict()
+      r['disks_stats'][disk]['rd_bytes'] = diskstats[1]
+      r['disks_stats'][disk]['wr_bytes'] = diskstats[3]
     return r
 
   def get_doms(self):
