@@ -4,6 +4,7 @@ from multiprocessing import Pool
 from lib import xmltodict
 
 import copy
+import json
 import logging
 import libvirt
 import time
@@ -15,7 +16,7 @@ uri_list = (
 #  ('vm2.rain','qemu+ssh://root@158.108.34.6/system'),
 #  ('vm3.rain','qemu+ssh://root@158.108.34.7/system'),
   )
-INTERVAL = 60.0
+INTERVAL = 3.0
 VIRT_CONNECT_TIMEOUT = 5
 
 class GatherProcess(Process):
@@ -40,16 +41,20 @@ class GatherProcess(Process):
 
   def parse_dom_nets(self, xmldesc):
     result = list()
-    #xmld = xmltodict.parse(xmldesc)
-    #xmld['domain']['devices']['interface']['target']['@dev']
-    #return ['venet0']
-    return []
+    xmld = xmltodict.parse(xmldesc)
+    interfaces = xmld['domain']['devices']['interface']
+    if type(interfaces) is not list:
+      result.append(interfaces['target']['@dev'])
+    else:
+      for i in interfaces:
+        result.append(i['target']['@dev'])
+    return result
 
   def get_dom_stats(self, dom):
     r = dict()
     r['state'],r['maxmem'],r['memory'],r['ncpus'],r['cputime'] =  dom.info()
     r['name'] = dom.name()
-    r['uuid'] = dom.UUID()
+#    r['uuid'] = dom.UUID()
     xmldesc = dom.XMLDesc(0)
     r['nets'] = self.parse_dom_nets(xmldesc)
     r['nets_stats'] = dict()
@@ -106,12 +111,22 @@ class GatherProcess(Process):
       stats['stats']['cputime'][k] = (stats['stats']['cputime'][k]*100.0)/sums
     logging.info(stats['stats']['cputime'])
 
-    # TODO: compute meaningful stat from different timeframe
-    # eg. rate of cpu usage from differential over the time
+    for dcur,dold in zip(stats["doms"],old_stats["doms"]):
+      dcur['cputime'] = (dcur['cputime'] - dold['cputime']) / (1000000.0*interval)
+      for disk in dcur["disks"]:
+        logging.info(dcur)
+        dcur['disks_stats'][disk]['wr_bytes'] = (dcur['disks_stats'][disk]['wr_bytes'] - dold['disks_stats'][disk]['wr_bytes'])/interval
+        dcur['disks_stats'][disk]['rd_bytes'] = (dcur['disks_stats'][disk]['rd_bytes'] - dold['disks_stats'][disk]['rd_bytes'])/interval
+      for net in dcur["nets"]:
+        logging.info(dcur)
+        dcur['nets_stats'][net]['tx_bytes'] = (dcur['nets_stats'][net]['tx_bytes'] - dold['nets_stats'][net]['tx_bytes'])/interval
+        dcur['nets_stats'][net]['rx_bytes'] = (dcur['nets_stats'][net]['rx_bytes'] - dold['nets_stats'][net]['rx_bytes'])/interval
+ 
     return stats
 
   def rrdstore(self, stats):
-    # logging.info("rrdstore :"+ str(stats['stats']))
+    logging.info("rrdstore :")
+    logging.info(stats)
     # TODO: store value in rrd file
     return stats
 
