@@ -1,0 +1,246 @@
+{
+    "hostname": "vm1.cloud.cpe.ku.ac.th", 
+    "cores": 4, 
+    "cpus": 8, 
+    "disks": [
+        "d4ca85b7-874b-4340-a154-68152cd4a717", 
+        "e8e35dcb-0214-446b-a34c-326c6bd932d3"
+    ], 
+    "doms_count": 5, 
+    "memory": 32056, 
+    "mhz": 1200, 
+    "model": "x86_64", 
+    "nodes": 2, 
+    "sockets": 1, 
+    "threads": 1,
+    "stats": {
+        "cputime": {
+            "idle": 92.78236914600551, 
+            "iowait": 4.077134986225896, 
+            "kernel": 1.5426997245179064, 
+            "user": 1.5977961432506886
+        }, 
+        "disks": {
+            "d4ca85b7-874b-4340-a154-68152cd4a717": {
+                "allocation": 7595352064, 
+                "available": 45249335296, 
+                "capacity": 52844687360, 
+                "state": 2
+            }, 
+            "e8e35dcb-0214-446b-a34c-326c6bd932d3": {
+                "allocation": 16553807872, 
+                "available": 4381492703232, 
+                "capacity": 4398046511104, 
+                "state": 2
+            }
+        }, 
+        "mem": {
+            "buffers": 237252, 
+            "cached": 191184, 
+            "free": 29356196, 
+            "total": 32826260
+        }
+    }, 
+    "doms": [
+        {
+            "cputime": 106.66666666666667, 
+            "disks": [
+                "vda", 
+                "vdb", 
+                "hdc"
+            ], 
+            "disks_stats": {
+                "hdc": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }, 
+                "vda": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }, 
+                "vdb": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }
+            }, 
+            "maxmem": 131072, 
+            "memory": 131072, 
+            "name": "r-15-VM", 
+            "ncpus": 1, 
+            "nets": [
+                "vnet4", 
+                "vnet5", 
+                "vnet6"
+            ], 
+            "nets_stats": {
+                "vnet4": {
+                    "rx_bytes": 0.0, 
+                    "tx_bytes": 0.0
+                }, 
+                "vnet5": {
+                    "rx_bytes": 0.0, 
+                    "tx_bytes": 0.0
+                }, 
+                "vnet6": {
+                    "rx_bytes": 424.0, 
+                    "tx_bytes": 0.0
+                }
+            }, 
+            "state": 1
+        }, 
+        {
+            "cputime": 10.0, 
+            "disks": [
+                "vda", 
+                "hdc"
+            ], 
+            "disks_stats": {
+                "hdc": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }, 
+                "vda": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }
+            }, 
+            "maxmem": 2097152, 
+            "memory": 2097152, 
+            "name": "i-6-19-VM", 
+            "ncpus": 2, 
+            "nets": [
+                "vnet8"
+            ], 
+            "nets_stats": {
+                "vnet8": {
+                    "rx_bytes": 0.0, 
+                    "tx_bytes": 0.0
+                }
+            }, 
+            "state": 1
+        }, 
+        {
+            "cputime": 103.33333333333333, 
+            "disks": [
+                "vda", 
+                "vdb", 
+                "hdc"
+            ], 
+            "disks_stats": {
+                "hdc": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }, 
+                "vda": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }, 
+                "vdb": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }
+            }, 
+            "maxmem": 262144, 
+            "memory": 262144, 
+            "name": "s-5-VM", 
+            "ncpus": 1, 
+            "nets": [
+                "vnet0", 
+                "vnet1", 
+                "vnet2", 
+                "vnet3"
+            ], 
+            "nets_stats": {
+                "vnet0": {
+                    "rx_bytes": 0.0, 
+                    "tx_bytes": 0.0
+                }, 
+                "vnet1": {
+                    "rx_bytes": 462.6666666666667, 
+                    "tx_bytes": 0.0
+                }, 
+                "vnet2": {
+                    "rx_bytes": 442.6666666666667, 
+                    "tx_bytes": 0.0
+                }, 
+                "vnet3": {
+                    "rx_bytes": 462.6666666666667, 
+                    "tx_bytes": 0.0
+                }
+            }, 
+            "state": 1
+        }, 
+        {
+            "cputime": 13.333333333333334, 
+            "disks": [
+                "vda", 
+                "vdb", 
+                "vdd", 
+                "hdc"
+            ], 
+            "disks_stats": {
+                "hdc": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }, 
+                "vda": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }, 
+                "vdb": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }, 
+                "vdd": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }
+            }, 
+            "maxmem": 1048576, 
+            "memory": 1048576, 
+            "name": "i-3-24-VM", 
+            "ncpus": 1, 
+            "nets": [
+                "vnet9"
+            ], 
+            "nets_stats": {
+                "vnet9": {
+                    "rx_bytes": 74.66666666666667, 
+                    "tx_bytes": 0.0
+                }
+            }, 
+            "state": 1
+        }, 
+        {
+            "cputime": 6.666666666666667, 
+            "disks": [
+                "vda", 
+                "hdc"
+            ], 
+            "disks_stats": {
+                "hdc": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }, 
+                "vda": {
+                    "rd_bytes": 0.0, 
+                    "wr_bytes": 0.0
+                }
+            }, 
+            "maxmem": 2097152, 
+            "memory": 2097152, 
+            "name": "i-3-16-VM", 
+            "ncpus": 2, 
+            "nets": [
+                "vnet7"
+            ], 
+            "nets_stats": {
+                "vnet7": {
+                    "rx_bytes": 56.0, 
+                    "tx_bytes": 0.0
+                }
+            }, 
+            "state": 1
+        }
+    ]
+}

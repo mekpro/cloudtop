@@ -3,20 +3,23 @@ from multiprocessing import Process
 from multiprocessing import Pool
 from lib import xmltodict
 
+import pymongo
 import copy
 import json
+import datetime
 import logging
 import libvirt
 import time
 import sys
 
 uri_list = (
-#  ('peacewalker','qemu+ssh://root@158.108.38.93/system'),
+  ('peacewalker','qemu+ssh://root@158.108.38.93/system'),
   ('vm1.rain','qemu+ssh://root@158.108.34.5/system'),
-#  ('vm2.rain','qemu+ssh://root@158.108.34.6/system'),
-#  ('vm3.rain','qemu+ssh://root@158.108.34.7/system'),
+  ('vm2.rain','qemu+ssh://root@158.108.34.6/system'),
+  ('vm3.rain','qemu+ssh://root@158.108.34.7/system'),
   )
-INTERVAL = 3.0
+
+INTERVAL = 60.0
 VIRT_CONNECT_TIMEOUT = 5
 
 class GatherProcess(Process):
@@ -121,13 +124,6 @@ class GatherProcess(Process):
         logging.info(dcur)
         dcur['nets_stats'][net]['tx_bytes'] = (dcur['nets_stats'][net]['tx_bytes'] - dold['nets_stats'][net]['tx_bytes'])/interval
         dcur['nets_stats'][net]['rx_bytes'] = (dcur['nets_stats'][net]['rx_bytes'] - dold['nets_stats'][net]['rx_bytes'])/interval
- 
-    return stats
-
-  def rrdstore(self, stats):
-    logging.info("rrdstore :")
-    logging.info(stats)
-    # TODO: store value in rrd file
     return stats
 
   def run(self):
@@ -137,7 +133,7 @@ class GatherProcess(Process):
         logging.info("starting collection from %s", self.node_uri)
       else:
         stats = self.diff_stats(self.new_stats, self.old_stats, self.interval)
-        self.rrdstore(stats)
+        stats['datetime'] = datetime.datetime.now().isoformat()
         self.queue.put(stats)
       self.old_stats = self.new_stats
       time.sleep(self.interval)
@@ -147,6 +143,8 @@ if __name__ == '__main__':
   logger.setLevel(logging.INFO)
   queue = Queue()
   process_list = list()
+  conn = pymongo.Connection("localhost", 27017, safe=True)
+  db = conn.cloudtop
   for uri in uri_list:
     logger.info(uri)
     p = GatherProcess(uri[0], uri[1], queue)
@@ -154,7 +152,6 @@ if __name__ == '__main__':
     process_list.append(p)
 
   print "Starting value gathering:"
-  #Listen Value
   while True:
-    queue.get()
-
+    stats = queue.get()
+    db.host.insert(stats)
