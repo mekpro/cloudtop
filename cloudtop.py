@@ -13,10 +13,10 @@ import time
 import sys
 
 uri_list = (
-  ('peacewalker','qemu+ssh://root@158.108.38.93/system'),
+#  ('peacewalker','qemu+ssh://root@158.108.38.93/system'),
   ('vm1.rain','qemu+ssh://root@158.108.34.5/system'),
-  ('vm2.rain','qemu+ssh://root@158.108.34.6/system'),
-  ('vm3.rain','qemu+ssh://root@158.108.34.7/system'),
+#  ('vm2.rain','qemu+ssh://root@158.108.34.6/system'),
+#  ('vm3.rain','qemu+ssh://root@158.108.34.7/system'),
   )
 
 INTERVAL = 60.0
@@ -133,7 +133,7 @@ class GatherProcess(Process):
         logging.info("starting collection from %s", self.node_uri)
       else:
         stats = self.diff_stats(self.new_stats, self.old_stats, self.interval)
-        stats['datetime'] = datetime.datetime.now().isoformat()
+        stats['collect_time'] = datetime.datetime.utcnow()
         self.queue.put(stats)
       self.old_stats = self.new_stats
       time.sleep(self.interval)
