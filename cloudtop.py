@@ -13,13 +13,13 @@ import time
 import sys
 
 uri_list = (
-#  ('peacewalker','qemu+ssh://root@158.108.38.93/system'),
+  ('peacewalker','qemu+ssh://root@158.108.38.93/system'),
   ('vm1.rain','qemu+ssh://root@158.108.34.5/system'),
-#  ('vm2.rain','qemu+ssh://root@158.108.34.6/system'),
-#  ('vm3.rain','qemu+ssh://root@158.108.34.7/system'),
+  ('vm2.rain','qemu+ssh://root@158.108.34.6/system'),
+  ('vm3.rain','qemu+ssh://root@158.108.34.7/system'),
   )
 
-INTERVAL = 60.0
+INTERVAL = 10.0
 VIRT_CONNECT_TIMEOUT = 5
 
 class GatherProcess(Process):
@@ -33,7 +33,13 @@ class GatherProcess(Process):
     self.interval = INTERVAL
     logging.info("Connecting to %s", self.node_uri)
     self.conn = libvirt.openReadOnly(self.node_uri)
- 
+
+  def extract_doms_name(self, doms_stats):
+    doms_name = list()
+    for dom in doms_stats:
+      doms_name.append(dom["domname"])
+    return doms_name
+
   def parse_dom_disks(self, xmldesc):
     result = list()
     xmld = xmltodict.parse(xmldesc)
@@ -55,8 +61,8 @@ class GatherProcess(Process):
 
   def get_dom_stats(self, dom):
     r = dict()
-    r['state'],r['maxmem'],r['memory'],r['ncpus'],r['cputime'] =  dom.info()
-    r['name'] = dom.name()
+    r['domname'] = dom.name()
+    r['state'],r['mem_max'],r['mem_use'],r['ncpus'],r['cputime'] =  dom.info()
 #    r['uuid'] = dom.UUID()
     xmldesc = dom.XMLDesc(0)
     r['nets'] = self.parse_dom_nets(xmldesc)
@@ -80,15 +86,17 @@ class GatherProcess(Process):
     domids = self.conn.listDomainsID()
     for domid in domids:
       dom = self.conn.lookupByID(domid)
-      doms_stats.append(self.get_dom_stats(dom))
+      dom_stats = self.get_dom_stats(dom)
+      doms_stats.append(dom_stats)
     return doms_stats
 
   def get_node_stats(self):
     r = dict()
     r['hostname'] = self.conn.getHostname()
     r['model'],r['memory'],r['cpus'],r['mhz'],r['nodes'],r['sockets'],r['cores'],r['threads'] = self.conn.getInfo()
-    r['doms'] = self.get_doms()
-    r['doms_count'] = len(self.conn.listDomainsID())
+    r['doms_stats'] = self.get_doms()
+    r['doms_name'] = self.extract_doms_name(r['doms_stats'])
+    r['doms_count'] = len(r['doms_stats'])
     r['disks'] = self.conn.listStoragePools()
     r['stats'] = dict()
     r['stats']['cputime'] = self.conn.getCPUStats(-1,0)
@@ -112,16 +120,13 @@ class GatherProcess(Process):
       sums = sums + v
     for k in ['kernel','idle','user','iowait']:
       stats['stats']['cputime'][k] = (stats['stats']['cputime'][k]*100.0)/sums
-    logging.info(stats['stats']['cputime'])
 
-    for dcur,dold in zip(stats["doms"],old_stats["doms"]):
+    for dcur,dold in zip(stats["doms_stats"],old_stats["doms_stats"]):
       dcur['cputime'] = (dcur['cputime'] - dold['cputime']) / (1000000.0*interval)
       for disk in dcur["disks"]:
-        logging.info(dcur)
         dcur['disks_stats'][disk]['wr_bytes'] = (dcur['disks_stats'][disk]['wr_bytes'] - dold['disks_stats'][disk]['wr_bytes'])/interval
         dcur['disks_stats'][disk]['rd_bytes'] = (dcur['disks_stats'][disk]['rd_bytes'] - dold['disks_stats'][disk]['rd_bytes'])/interval
       for net in dcur["nets"]:
-        logging.info(dcur)
         dcur['nets_stats'][net]['tx_bytes'] = (dcur['nets_stats'][net]['tx_bytes'] - dold['nets_stats'][net]['tx_bytes'])/interval
         dcur['nets_stats'][net]['rx_bytes'] = (dcur['nets_stats'][net]['rx_bytes'] - dold['nets_stats'][net]['rx_bytes'])/interval
     return stats
@@ -133,10 +138,22 @@ class GatherProcess(Process):
         logging.info("starting collection from %s", self.node_uri)
       else:
         stats = self.diff_stats(self.new_stats, self.old_stats, self.interval)
+        cputime = stats['stats']['cputime']
+        stats['cpu_load'] = cputime['kernel'] + cputime['user'] + cputime['iowait']
         stats['collect_time'] = datetime.datetime.utcnow()
         self.queue.put(stats)
       self.old_stats = self.new_stats
       time.sleep(self.interval)
+
+def mongostore(db, stats):
+  doms_stats = stats.pop('doms_stats') 
+  collect_time = stats["collect_time"]
+  hostname = stats["hostname"]
+  db.host.insert(stats)
+  for dom in doms_stats:
+    dom["collect_time"] = collect_time
+    dom["hostname"] = hostname
+    db.dom.insert(dom)
 
 if __name__ == '__main__':
   logger = logging.getLogger('')
@@ -154,4 +171,5 @@ if __name__ == '__main__':
   print "Starting value gathering:"
   while True:
     stats = queue.get()
-    db.host.insert(stats)
+    logging.info(stats)
+    mongostore(db, stats)
