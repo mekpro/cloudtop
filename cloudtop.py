@@ -19,7 +19,7 @@ uri_list = (
   ('vm3.rain','qemu+ssh://root@158.108.34.7/system'),
   )
 
-INTERVAL = 10.0
+INTERVAL = 60.0
 VIRT_CONNECT_TIMEOUT = 5
 
 class GatherProcess(Process):

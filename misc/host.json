@@ -1,0 +1,56 @@
+{
+  "_id" : ObjectId("509756ebab417856ec00001a"),
+  "hostname" : "vm1.cloud.cpe.ku.ac.th",
+  "stats" : {
+    "mem" : {
+      "cached" : NumberLong(270540),
+      "total" : NumberLong(32826260),
+      "buffers" : NumberLong(248912),
+      "free" : NumberLong(28877132)
+    },
+    "disks" : {
+      "e8e35dcb-0214-446b-a34c-326c6bd932d3" : {
+        "allocation" : NumberLong("17350586368"),
+        "available" : NumberLong("4380695924736"),
+        "state" : 2,
+        "capacity" : NumberLong("4398046511104")
+      },
+      "d4ca85b7-874b-4340-a154-68152cd4a717" : {
+        "allocation" : NumberLong("7595352064"),
+        "available" : NumberLong("45249335296"),
+        "state" : 2,
+        "capacity" : NumberLong("52844687360")
+      }
+    },
+    "cputime" : {
+      "kernel" : 1.1671890197773696,
+      "idle" : 97.19010050794337,
+      "user" : 0.5835945098886848,
+      "iowait" : 1.059115962390576
+    }
+  },
+  "disks" : [
+    "d4ca85b7-874b-4340-a154-68152cd4a717",
+    "e8e35dcb-0214-446b-a34c-326c6bd932d3"
+  ],
+  "cpus" : 8,
+  "collect_time" : ISODate("2012-11-05T06:04:27.538Z"),
+  "doms_count" : 6,
+  "mhz" : 1200,
+  "threads" : 1,
+  "cpu_load" : 2.8098994920566303,
+  "sockets" : 1,
+  "memory" : 32056,
+  "cores" : 4,
+  "model" : "x86_64",
+  "nodes" : 2,
+  "doms_name" : [
+    "r-15-VM",
+    "i-6-19-VM",
+    "i-6-26-VM",
+    "s-5-VM",
+    "i-3-24-VM",
+    "i-3-16-VM"
+  ]
+}
+

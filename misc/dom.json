@@ -1,0 +1,48 @@
+  "_id" : ObjectId("509752f5ab417855c3000001"),
+  "hostname" : "vm1.cloud.cpe.ku.ac.th",
+  "domname" : "r-15-VM",
+  "disks" : [
+    "vda",
+    "vdb",
+    "hdc"
+  ],
+  "disks_stats" : {
+    "vda" : {
+      "rd_bytes" : 0,
+      "wr_bytes" : 0
+    },
+    "vdb" : {
+      "rd_bytes" : 0,
+      "wr_bytes" : 0
+    },
+    "hdc" : {
+      "rd_bytes" : 0,
+      "wr_bytes" : 0
+    }
+  },
+  "cputime" : 71,
+  "collect_time" : ISODate("2012-11-05T05:47:33.323Z"),
+  "state" : 1,
+  "mem_max" : NumberLong(131072),
+  "nets_stats" : {
+    "vnet4" : {
+      "tx_bytes" : 0,
+      "rx_bytes" : 0
+    },
+    "vnet5" : {
+      "tx_bytes" : 0,
+      "rx_bytes" : 0
+    },
+    "vnet6" : {
+      "tx_bytes" : 0,
+      "rx_bytes" : 260
+    }
+  },
+  "mem_use" : NumberLong(131072),
+  "nets" : [
+    "vnet4",
+    "vnet5",
+    "vnet6"
+  ],
+  "ncpus" : 1
+
