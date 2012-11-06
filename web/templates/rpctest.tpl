@@ -1,5 +1,12 @@
 <html>
 <head>
+<style type="text/css">
+  .container {
+    width: 480px;
+    height: 320px;
+    margin: 4px auto; 
+  }
+</style>
 <script>
 function new_request() {
     var req;
@@ -37,10 +44,19 @@ function rpc(method, params) {
 <body>
 
 <p>
+<h2>CPU Time</h2>
+<div id="graph_host_cputime" class="container"> </div>
+<h2>Memory</h2>
+<div id="graph_host_memory" class="container"> </div>
+
 <script>
-  document.write(rpc('get_host_stats', ['{{start}}','{{end}}','{{hostname}}']));
+  result = rpc('get_host_stats', ['{{start}}','{{end}}','{{hostname}}']);
+  document.write(result.info.hostname);
+
 </script>
 </p>
 
 </body>
+<script type="text/javascript" src="/static/flotr2.min.js">
+<script type="text/javascript" src="/static/jquery.js">
 </html>

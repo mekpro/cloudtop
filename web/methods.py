@@ -63,8 +63,10 @@ class Methods:
       i = i+1
     return r
 
-  def get_doms_stats_from_host(self, start, end, hostname):
+  def get_doms_stats_from_host(self, start_str, end_str, hostname):
     db = self.__db__()
+    start = iso8601.parse_date(start_str)
+    end = iso8601.parse_date(end_str)
     r = list()
     doms_name = db.dom.find({
       'hostname' : hostname,
@@ -98,18 +100,18 @@ class Methods:
 
 if __name__ == '__main__':
   method = Methods()
-  delta = datetime.timedelta(hours=1)
+  delta = datetime.timedelta(minutes=5)
   end = datetime.datetime.utcnow()
   start = end - delta
 
   hostlist = ['vm1.cloud.cpe.ku.ac.th',
-    'vm2.cloud.cpe.ku.ac.th',
-    'vm3.cloud.cpe.ku.ac.th'
+#    'vm2.cloud.cpe.ku.ac.th',
+#    'vm3.cloud.cpe.ku.ac.th'
   ]
 
-  for i in range(0,100):
+  for i in range(0,1):
     for hostname in hostlist:
-      # result = get_host_stats(start, end ,hostname)
-      result = method.get_doms_stats_from_host(str(start), str(end) ,hostname)
-      # print result
+      result = method.get_host_stats(str(start), str(end), hostname)
+      #result = method.get_doms_stats_from_host(str(start), str(end) ,hostname)
+      print result
 
