@@ -72,9 +72,16 @@ class Methods:
         'domname' : domname,
         'collect_time' : {"$gt": start, "$lte": end},
       })
+      last_dom = db.dom.find_one({
+        'hostname' : hostname,
+        'collect_time' : {"$gt": start, "$lte": end},
+      })
+
       dom['info'] = dict()
       dom['info']['domname'] = domname
-      dom['info']['last_update'] = end
+      dom['info']['last_update'] = str(last_dom['collect_time'])
+      dom['info']['ncpus'] = last_dom['ncpus']
+      dom['info']['mem_max'] = last_dom['mem_max']
       dom['graph'] = dict()
       dom['graph']['cpu'] = dict()
       dom['graph']['cpu']['params'] = dict()
@@ -113,11 +120,11 @@ if __name__ == '__main__':
 #    'vm3.cloud.cpe.ku.ac.th'
   ]
 
-  result = method.get_overview(str(start), str(end))
-#  for i in range(0,1):
-#    for hostname in hostlist:
+#  result = method.get_overview(str(start), str(end))
+  for i in range(0,1):
+    for hostname in hostlist:
 #      result = method.get_host_stats(str(start), str(end), hostname)
-#      result = method.get_doms_stats_from_host(str(start), str(end) ,hostname)
+       result = method.get_doms_stats_from_host(str(start), str(end) ,hostname)
 
   print result
 
