@@ -12,18 +12,11 @@ class Methods:
     db = self.__db__()
     start = iso8601.parse_date(start_str)
     end = iso8601.parse_date(end_str)
-    logging.error(start)
-    logging.error(type(start))
-    logging.error(end)
-    logging.error(type(end))
-    logging.error(hostname)
     r = dict()
     last_host = db.host.find_one({
       'hostname' : hostname,
       'collect_time' : {"$gt": start, "$lte": end},
     })
-    logging.error(db)
-    logging.error(last_host)
     r['info'] = dict()
     r['info']['hostname'] = last_host['hostname']
     r['info']['last_update'] = str(last_host['collect_time'])
@@ -79,24 +72,35 @@ class Methods:
         'domname' : domname,
         'collect_time' : {"$gt": start, "$lte": end},
       })
-      dom['cpu'] = dict()
-      dom['cpu']['params'] = dict()
-      dom['cpu']['data'] = list()
-      dom['cpu']['data'].append(list())
-      dom['mem'] = dict()
-      dom['mem']['params'] = dict()
-      dom['mem']['data'] = list()
-      dom['mem']['data'].append(list())
-      # dom['net']
-      # dom['disk']
+      dom['info'] = dict()
+      dom['info']['domname'] = domname
+      dom['info']['last_update'] = end
+      dom['graph'] = dict()
+      dom['graph']['cpu'] = dict()
+      dom['graph']['cpu']['params'] = dict()
+      dom['graph']['cpu']['data'] = list()
+      dom['graph']['cpu']['data'].append(list())
+      dom['graph']['mem'] = dict()
+      dom['graph']['mem']['params'] = dict()
+      dom['graph']['mem']['data'] = list()
+      dom['graph']['mem']['data'].append(list())
+      # dom['graph']['net']
+      # dom['graph']['disk']
       i = 0
       for stat in stats:
-        dom['cpu']['data'][0].append((i,stat['cputime']))
-        dom['mem']['data'][0].append((i,stat['mem_use']))
+        dom['graph']['cpu']['data'][0].append((i,stat['cputime']))
+        dom['graph']['mem']['data'][0].append((i,stat['mem_use']))
         i = i+1
       r.append(dom)
     return r
 
+  def get_overview(self, start_str, end_str):
+    db = self.__db__()
+    hosts = db.host.distinct('hostname')
+    host_stats = list()
+    for hostname in hosts:
+      host_stats.append(self.get_host_stats(start_str, end_str, hostname))
+    return host_stats
 
 if __name__ == '__main__':
   method = Methods()
@@ -109,9 +113,11 @@ if __name__ == '__main__':
 #    'vm3.cloud.cpe.ku.ac.th'
   ]
 
-  for i in range(0,1):
-    for hostname in hostlist:
-      result = method.get_host_stats(str(start), str(end), hostname)
-      #result = method.get_doms_stats_from_host(str(start), str(end) ,hostname)
-      print result
+  result = method.get_overview(str(start), str(end))
+#  for i in range(0,1):
+#    for hostname in hostlist:
+#      result = method.get_host_stats(str(start), str(end), hostname)
+#      result = method.get_doms_stats_from_host(str(start), str(end) ,hostname)
+
+  print result
 

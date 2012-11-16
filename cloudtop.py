@@ -133,7 +133,7 @@ class GatherProcess(Process):
     return stats
 
   def mongostore(self, stats):
-    doms_stats = stats.pop('doms_stats') 
+    doms_stats = stats.pop('doms_stats')
     collect_time = stats["collect_time"]
     hostname = stats["hostname"]
     self.db.host.insert(stats)
