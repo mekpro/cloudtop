@@ -1,4 +1,4 @@
-from bottle import route, run, template, static_file
+import bottle
 import pymongo
 import datetime
 
@@ -11,23 +11,32 @@ PORT = 8088
 
 bottle_jsonrpc.register('/rpc', methods.Methods())
 
-@route('/static/<filepath:path>')
+@bottle.route('/static/<filepath:path>')
 def server_static(filepath):
-    return static_file(filepath, root=ROOT_DIR)
+    return bottle.static_file(filepath, root=ROOT_DIR)
 
-@route('/rpctest')
+@bottle.route('/rpctest')
 def rpctest():
   delta = datetime.timedelta(hours=1)
   end = datetime.datetime.utcnow()
   start = end - delta
   hostname = 'vm1.cloud.cpe.ku.ac.th'
-  return template('templates/rpctest', start=start, end=end, hostname=hostname)
+  return bottle.template('templates/rpctest', pagename="Overview", start=start, end=end, hostname=hostname)
 
-@route('/')
+@bottle.route('/')
 def index():
   dt = datetime.datetime.now().isoformat()
-  return template('templates/index', dt=dt)
+  return bottle.template('templates/index', dt=dt)
+
+@bottle.route('/host/<hostname>')
+def view_host(hostname):
+  dt = datetime.datetime.now().isoformat()
+  delta = datetime.timedelta(hours=1)
+  end = datetime.datetime.utcnow()
+  start = end - delta
+  return bottle.template('templates/view_host', pagename="Host", dt=dt, start=start, end=end, hostname=hostname)
 
 
 if __name__ == '__main__':
-  run(host=IP_BIND, port=PORT)
+  bottle.debug(True)
+  bottle.run(reloader=True, host=IP_BIND, port=PORT)

@@ -59,4 +59,5 @@ function rpc(method, params) {
 </body>
 <script type="text/javascript" src="/static/flotr2.min.js">
 <script type="text/javascript" src="/static/jquery.js">
+
 </html>
