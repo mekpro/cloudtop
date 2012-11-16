@@ -9,6 +9,8 @@
       <li id=cpus>CPU Core: <span>h.info.cpus</span></li>
       <li id=doms_count>Running VM: <span>h.info.doms_count</span></li>
     </ul>
+    <div class=graph id=graph_cpu></div>
+    <div class=graph id=graph_mem></div>
   </div>
 </div>
 
@@ -20,6 +22,8 @@
   $("#hostinfo #hostname span").text(h.info.hostname)
   $("#hostinfo #cpus span").text(h.info.cpus)
   $("#hostinfo #doms_count span").text(h.info.doms_count)
+
+  graph = Flotr.draw(graph_cpu, [ h.graph.cputime.data[0]], {yaxis : { max:1, min:0 }} );
 
 </script>
 

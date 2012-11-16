@@ -2,15 +2,19 @@
 <head>
   <title> Cloudtop Web </title>
   <script src="/static/jquery.js"></script>
+  <script src="/static/flotr2.min.js"></script>
   <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <style type="text/css">
     body { 
       padding-top: 60px;
       padding-bottom: 40px;
     }
-    .sidebar-nav {
-      padding: 9px 0;
-    }
+    .graph {
+      width: 400px;
+      height: 280px;
+      margin: 8px auto;
+
+    } 
   </style>
 </head>
 <body>
