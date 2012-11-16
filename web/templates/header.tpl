@@ -1,6 +1,7 @@
 <html>
 <head>
   <title> Cloudtop Web </title>
+  <script src="/static/jquery.js"></script>
   <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <style type="text/css">
     body { 
