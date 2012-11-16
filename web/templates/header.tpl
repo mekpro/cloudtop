@@ -10,11 +10,16 @@
       padding-bottom: 40px;
     }
     .graph {
-      width: 400px;
-      height: 280px;
+      width: 320px;
+      height: 240px;
       margin: 8px auto;
-
     } 
+    
+    .minigraph {
+      width: 180px;
+      height: 120px;
+    }
+    
   </style>
 </head>
 <body>
