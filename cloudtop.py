@@ -23,14 +23,15 @@ INTERVAL = 60.0
 VIRT_CONNECT_TIMEOUT = 5
 
 class GatherProcess(Process):
-  def __init__(self, node_name, node_uri, queue):
+  def __init__(self, node_name, node_uri):
     Process.__init__(self)
     self.node_name = node_name
-    self.queue = queue
     self.old_stats = None
     self.new_stats = None
     self.node_uri = node_uri
     self.interval = INTERVAL
+    conn = pymongo.Connection("localhost", 27017, safe=True)
+    self.db = conn.cloudtop
     logging.info("Connecting to %s", self.node_uri)
     self.conn = libvirt.openReadOnly(self.node_uri)
 
@@ -131,6 +132,16 @@ class GatherProcess(Process):
         dcur['nets_stats'][net]['rx_bytes'] = (dcur['nets_stats'][net]['rx_bytes'] - dold['nets_stats'][net]['rx_bytes'])/interval
     return stats
 
+  def mongostore(self, stats):
+    doms_stats = stats.pop('doms_stats') 
+    collect_time = stats["collect_time"]
+    hostname = stats["hostname"]
+    self.db.host.insert(stats)
+    for dom in doms_stats:
+      dom["collect_time"] = collect_time
+      dom["hostname"] = hostname
+      self.db.dom.insert(dom)
+
   def run(self):
     while True:
       self.new_stats = self.get_node_stats()
@@ -141,35 +152,31 @@ class GatherProcess(Process):
         cputime = stats['stats']['cputime']
         stats['cpu_load'] = cputime['kernel'] + cputime['user'] + cputime['iowait']
         stats['collect_time'] = datetime.datetime.utcnow()
-        self.queue.put(stats)
+        self.mongostore(stats)
+        logging.info('collected from ' + self.node_name)
       self.old_stats = self.new_stats
       time.sleep(self.interval)
-
-def mongostore(db, stats):
-  doms_stats = stats.pop('doms_stats') 
-  collect_time = stats["collect_time"]
-  hostname = stats["hostname"]
-  db.host.insert(stats)
-  for dom in doms_stats:
-    dom["collect_time"] = collect_time
-    dom["hostname"] = hostname
-    db.dom.insert(dom)
 
 if __name__ == '__main__':
   logger = logging.getLogger('')
   logger.setLevel(logging.INFO)
-  queue = Queue()
-  process_list = list()
-  conn = pymongo.Connection("localhost", 27017, safe=True)
-  db = conn.cloudtop
+  process_table = list()
   for uri in uri_list:
     logger.info(uri)
-    p = GatherProcess(uri[0], uri[1], queue)
+    p = GatherProcess(uri[0], uri[1])
     p.start()
-    process_list.append(p)
+    process_entry = {'name': uri[0], 'uri': uri[1], 'process': p}
+    process_table.append(process_entry)
 
   print "Starting value gathering:"
   while True:
-    stats = queue.get()
-    logging.info(stats)
-    mongostore(db, stats)
+    time.sleep(INTERVAL)
+    for p in process_table:
+      if not p['process'].is_alive():
+        p['process'].terminate()
+        p = GatherProcess(p['name'], p['uri'])
+        p.start()
+        p['process'] = p
+        logging.info('process' + p['name'] + ' restarted')
+      else:
+        logging.info('process' + p['uri'] + ' is alive')
